@@ -1,2 +1,2 @@
-# MLOPS-Clasification-Model
-Implementation of Production Ready Classification Model
+# MLOPs-Clasification-Model
+Implementation of MLOPs Production Ready Classification Model
