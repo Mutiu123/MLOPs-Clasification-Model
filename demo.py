@@ -1,16 +1,11 @@
-<<<<<<< HEAD
+from us_visa.logger import logging
 
-#from us_visa.logger import *
-import sys
-from us_visa.logger import logging 
+logging.info("double logging test")
+
 from us_visa.exception import USvisaException
+import sys 
 
-
-logging.info("logging info testing")
-
-try: 
-    b = 5/0
+try:
+    comp = 5/0 
 except Exception as e:
     raise USvisaException(e, sys)
-=======
->>>>>>> parent of b3eab83 (create logging and exception modules)
