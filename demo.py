@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 
 #from us_visa.logger import *
 import sys
@@ -11,3 +12,5 @@ try:
     b = 5/0
 except Exception as e:
     raise USvisaException(e, sys)
+=======
+>>>>>>> parent of b3eab83 (create logging and exception modules)
