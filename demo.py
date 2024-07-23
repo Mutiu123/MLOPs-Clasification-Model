@@ -1,11 +1,11 @@
-from us_visa.logger import logging
 
-logging.info("double logging test")
+"""
+import os 
+mongodb_db_url = os.getenv("MONGODB_URL")
+print(mongodb_db_url)
 
-from us_visa.exception import USvisaException
-import sys 
+"""
+from us_visa.pipline.training_pipeline import TrainPipeline
 
-try:
-    comp = 5/1 
-except Exception as e:
-    raise USvisaException(e, sys)
+obj = TrainPipeline()
+obj.run_pipeline()
