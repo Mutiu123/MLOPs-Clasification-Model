@@ -14,17 +14,10 @@ This model is to check if Visa get approved or not based on the given dataset.
 This can be used to Recommend a suitable profile for the applicants for whom the visa should be certified or denied based on the certain criteria which influences the decision.
 
 **Data Collection**
+
 The Dataset is part of Office of Foreign Labor Certification (OFLC)
 The data consists of 25480 Rows and 12 Columns
-https://www.kaggle.com/datasets/moro23/easyvisa-dataset
-
-
-
-
-
-
-
-
+https://www.kaggle.com/datasets/moro23/easyvisa-dataset 
 
 
 
@@ -47,4 +40,22 @@ conda activate visa-decision-model
 ```bash 
 pip install -r requirements.txt
 ```
+
+
+
+
+
+```bash
+export MONGODB_URL="mongodb+srv://<username>:<password>...."
+
+
+
+export AWS_ACCESS_KEY_ID=<AWS_ACCESS_KEY_ID>
+
+export AWS_SECRET_ACCESS_KEY=<AWS_SECRET_ACCESS_KEY>
+
+
+```
+
+
 
