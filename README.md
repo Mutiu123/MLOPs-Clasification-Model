@@ -58,8 +58,11 @@ pip install -r requirements.txt
 ```
 
 
+```bash
+create S3 bucket to store the latest version of the trained model
 
 
+```
 
 ```bash
 export MONGODB_URL="mongodb+srv://<username>:<password>...."
@@ -119,7 +122,7 @@ export AWS_SECRET_ACCESS_KEY=<AWS_SECRET_ACCESS_KEY>
 
 	
 ## 3. Create ECR repo to store/save docker image
-    - Save the URI: 315865595366.dkr.ecr.us-east-1.amazonaws.com/visarepo
+    - Save the URL: 024848444109.dkr.ecr.eu-west-2.amazonaws.com/visarepo
 
 	
 ## 4. Create EC2 machine (Ubuntu) 
