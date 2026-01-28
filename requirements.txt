@@ -41,7 +41,6 @@ python-multipart>=0.0.6
 from_root>=1.0.4
 dill>=0.3.7
 PyYAML>=6.0
-neuro_mf>=0.0.7
 python-dotenv>=1.0.0
 
 # Package

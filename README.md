@@ -1,4 +1,4 @@
-# US Visa Decision Prediction - Production Ready MLOps Model
+# Hydrogen Pipeline Leak Detection & Characterization - Production Ready MLOps Model
 
 <div align="center">
 
@@ -8,11 +8,166 @@
 ![Kubernetes](https://img.shields.io/badge/Kubernetes-1.24+-blue)
 ![License](https://img.shields.io/badge/License-MIT-green)
 
-A **production-ready MLOps classification model** that predicts US visa approval decisions using machine learning with comprehensive security, monitoring, and deployment capabilities.
+A **production-ready MLOps system** for hydrogen pipeline leak detection and characterization using machine learning with comprehensive security, monitoring, and deployment capabilities.
 
 [Quick Start](#quick-start) • [Documentation](#documentation) • [API Reference](#api-reference) • [Contributing](CONTRIBUTING.md) • [Deployment](DEPLOYMENT.md)
 
 </div>
+
+---
+
+## Overview
+
+Hydrogen is emerging as a critical clean energy vector for industrial applications and power generation. However, safe and reliable hydrogen pipeline infrastructure requires advanced leak detection and characterization systems.
+
+**Problem Statement:**
+Hydrogen pipeline operators need an intelligent machine learning system to detect and characterize leaks in real-time using laboratory experimental data, operational sensor readings, and environmental data, enabling rapid response to safety threats.
+
+**Solution:**
+This project implements a production-ready ML system that:
+- **Detects hydrogen leaks** using real-time sensor data from operational pipelines
+- **Characterizes leak severity** based on multiple environmental and sensor factors
+- **Integrates laboratory & field data** combining experimental results with operational readings
+- **Monitors environmental conditions** including temperature, pressure, soil moisture, and corrosion rates
+- Provides security, monitoring, and scalability for critical infrastructure
+
+**Data Sources:**
+- Laboratory experimental results on hydrogen-metal interactions
+- Sensor data from operational pipelines capturing real-world performance
+- Environmental datasets covering temperature, pressure, and soil conditions affecting pipeline exposure
+- Historical leak events and characterization records
+
+---
+
+## Features
+
+### Machine Learning
+- Real-time hydrogen leak detection
+- Leak severity classification (no leak, minor, moderate, critical)
+- Multi-sensor data fusion (pressure, temperature, vibration, H2 concentration)
+- Environmental factor integration (soil moisture, corrosion rates, pipe age)
+- Model performance monitoring and drift detection
+
+### Security
+- JWT-based authentication
+- Rate limiting (configurable)
+- CORS with restrictive origins
+- Input validation with Pydantic
+- HTTPS/TLS support
+- Non-root container execution
+
+### Monitoring & Observability
+- Prometheus metrics at `/metrics`
+- Structured JSON logging
+- Request/response tracking with IDs
+- Performance metrics collection
+- Health check endpoint
+- Grafana dashboard integration
+
+### API Features
+- OpenAPI/Swagger documentation
+- Response models with validation
+- Error handling
+- Request tracking
+- Comprehensive documentation
+
+---
+
+## Quick Start
+
+### Prerequisites
+
+- Python 3.10+
+- Docker & Docker Compose (optional)
+- Git
+- MongoDB instance
+- AWS account (optional)
+
+### Local Development Setup
+
+#### 1. Clone the Repository
+
+```bash
+git clone https://github.com/yourusername/Hydrogen-Pipeline-Leak-Detection.git
+cd Hydrogen-Pipeline-Leak-Detection
+```
+
+#### 2. Create Virtual Environment
+
+```bash
+# Using venv
+python -m venv venv
+
+# Activate (Linux/Mac)
+source venv/bin/activate
+
+# Activate (Windows)
+venv\Scripts\activate
+```
+
+#### 3. Install Dependencies
+
+```bash
+pip install -r requirements-dev.txt
+```
+
+#### 4. Setup Environment Variables
+
+```bash
+cp .env.example .env
+# Edit .env with your configuration
+```
+
+#### 5. Run the Application
+
+```bash
+python app.py
+# Or with hot reload
+python -m uvicorn app:app --reload
+```
+
+Access: http://localhost:8080
+
+---
+
+## API Documentation
+
+### Leak Detection Endpoint
+**POST** `/predict`
+
+```bash
+curl -X POST http://localhost:8080/predict \
+  -H "Content-Type: application/json" \
+  -d '{
+    "pressure_mpa": 35.5,
+    "temperature_celsius": 45.2,
+    "hydrogen_concentration_ppm": 5000,
+    "vibration_hz": 250.5,
+    "pipe_age_years": 15,
+    "material": "steel",
+    "flow_rate_kg_h": 2500,
+    "corrosion_rate_mm_year": 0.5,
+    "soil_moisture_percent": 65.0,
+    "operating_hours": 125000
+  }'
+```
+
+---
+
+## License
+
+MIT License - see [LICENSE](LICENSE) file for details
+
+---
+
+<div align="center">
+
+Made with dedication for hydrogen energy safety
+
+⭐ Star us on GitHub!
+
+</div>
+
 
 ---
 
