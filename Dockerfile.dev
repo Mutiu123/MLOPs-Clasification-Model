@@ -1,0 +1,32 @@
+# Development Dockerfile with hot-reload
+FROM python:3.10.13-slim-bullseye
+
+WORKDIR /app
+
+# Install development dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    git \
+    curl \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy requirements
+COPY requirements-dev.txt requirements.txt ./
+
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements-dev.txt
+
+# Copy application code
+COPY . /app
+
+# Set environment variables
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    ENVIRONMENT=development
+
+# Expose port
+EXPOSE 8080
+
+# Run application with uvicorn reload
+CMD ["python", "-m", "uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8080", "--reload"]

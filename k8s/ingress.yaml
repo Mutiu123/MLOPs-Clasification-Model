@@ -1,0 +1,53 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: usvisa-app-ingress
+  namespace: usvisa-app
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/rate-limit: "100"
+    nginx.ingress.kubernetes.io/limit-rps: "10"
+spec:
+  tls:
+  - hosts:
+    - usvisa-app.example.com
+    secretName: usvisa-tls
+  rules:
+  - host: usvisa-app.example.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: usvisa-app
+            port:
+              number: 80
+
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: usvisa-app-pdb
+  namespace: usvisa-app
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: usvisa-app
+
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: usvisa-app
+  namespace: usvisa-app
+spec:
+  selector:
+    matchLabels:
+      app: usvisa-app
+  endpoints:
+  - port: http
+    path: /metrics
+    interval: 30s
