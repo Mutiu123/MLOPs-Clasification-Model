@@ -666,7 +666,7 @@ For questions and support:
 
 Made with dedication for production excellence
 
-⭐ Star us on GitHub!
+Star us on GitHub!
 
 </div>
 
