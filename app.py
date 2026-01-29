@@ -1,5 +1,5 @@
 """
-Production-ready FastAPI application for US Visa Prediction
+Production-ready FastAPI application for Hydrogen Pipeline Leak Detection
 """
 import time
 from fastapi import FastAPI, Request, HTTPException, status
@@ -15,33 +15,33 @@ import uvicorn
 from typing import Optional
 from datetime import datetime
 
-from us_visa.constants import APP_HOST, APP_PORT
-from us_visa.pipline.prediction_pipeline import USvisaData, USvisaClassifier
-from us_visa.pipline.training_pipeline import TrainPipeline
-from us_visa.schemas import (
-    USVisaPredictionRequest,
-    USVisaPredictionResponse,
+from h2_pipeline.constants import APP_HOST, APP_PORT
+from h2_pipeline.pipline.prediction_pipeline import H2SensorData, H2PipelineLeakDetector
+from h2_pipeline.pipline.training_pipeline import TrainPipeline
+from h2_pipeline.schemas import (
+    H2SensorDataRequest,
+    H2SensorDataResponse,
     TrainingResponse,
     HealthCheckResponse,
     ErrorResponse,
 )
-from us_visa.config import get_settings
-from us_visa.logging_config import logger, log_prediction, log_model_training, log_error_event
-from us_visa.middleware import (
+from h2_pipeline.config import get_settings
+from h2_pipeline.logging_config import logger, log_prediction, log_model_training, log_error_event
+from h2_pipeline.middleware import (
     RequestContextMiddleware,
     RateLimitMiddleware,
     ExceptionMiddleware,
 )
-from us_visa.metrics import MetricsCollector
-from us_visa.security import rate_limiter
+from h2_pipeline.metrics import MetricsCollector
+from h2_pipeline.security import rate_limiter
 
 # Initialize settings
 settings = get_settings()
 
 # Create FastAPI application
 app = FastAPI(
-    title="US Visa Prediction API",
-    description="Production-ready ML model for visa approval prediction",
+    title="Hydrogen Pipeline Leak Detection API",
+    description="Production-ready ML model for hydrogen pipeline leak detection and characterization",
     version=settings.API_VERSION,
     docs_url="/api/docs",
     redoc_url="/api/redoc",
@@ -104,7 +104,7 @@ async def health_check():
 @app.get("/", tags=["web"])
 async def index(request: Request):
     """
-    Serve the main prediction form
+    Serve the main hydrogen pipeline leak detection form
     
     Args:
         request: FastAPI Request object
@@ -113,14 +113,14 @@ async def index(request: Request):
         HTML template response
     """
     return templates.TemplateResponse(
-        "usvisa.html", {"request": request, "context": "Rendering"}
+        "h2_pipeline.html", {"request": request, "context": "Rendering"}
     )
 
 
 @app.get("/train", tags=["training"], response_model=TrainingResponse)
 async def train_route_client():
     """
-    Trigger model training pipeline
+    Trigger model training pipeline for hydrogen leak detection
     
     Returns:
         TrainingResponse: Training status and message
@@ -132,7 +132,7 @@ async def train_route_client():
     start_time = time.time()
     
     try:
-        logger.info("Training pipeline initiated")
+        logger.info("Hydrogen pipeline training pipeline initiated")
         train_pipeline = TrainPipeline()
         train_pipeline.run_pipeline()
         
@@ -145,9 +145,10 @@ async def train_route_client():
         )
         
         return TrainingResponse(
+            training_id="h2_pipeline_training",
             status="success",
-            message="Model training completed successfully",
-            artifacts_location="artifact/",
+            message="Model training completed successfully for hydrogen pipeline leak detection",
+            timestamp=datetime.utcnow().isoformat(),
         )
 
     except Exception as e:
@@ -167,18 +168,18 @@ async def train_route_client():
 @app.post(
     "/predict",
     tags=["prediction"],
-    response_model=USVisaPredictionResponse,
+    response_model=H2SensorDataResponse,
     responses={422: {"model": ErrorResponse}},
 )
-async def predict_api(request: USVisaPredictionRequest):
+async def predict_api(request: H2SensorDataRequest):
     """
-    API endpoint for visa prediction using JSON input
+    API endpoint for hydrogen pipeline leak detection using JSON input
     
     Args:
-        request: USVisaPredictionRequest with all required features
+        request: H2SensorDataRequest with all sensor data
         
     Returns:
-        USVisaPredictionResponse: Prediction result and confidence
+        H2SensorDataResponse: Leak detection result and confidence
         
     Raises:
         HTTPException: If prediction fails
@@ -187,48 +188,51 @@ async def predict_api(request: USVisaPredictionRequest):
     request_id = None
     
     try:
-        logger.info(f"Prediction request received: {request.dict()}")
+        logger.info(f"Leak detection request received: {request.dict()}")
         
-        # Create USvisaData object from request
-        usvisa_data = USvisaData(
-            continent=request.continent,
-            education_of_employee=request.education_of_employee,
-            has_job_experience=request.has_job_experience,
-            requires_job_training=request.requires_job_training,
-            no_of_employees=request.no_of_employees,
-            company_age=request.company_age,
-            region_of_employment=request.region_of_employment,
-            prevailing_wage=request.prevailing_wage,
-            unit_of_wage=request.unit_of_wage,
-            full_time_position=request.full_time_position,
+        # Create H2SensorData object from request
+        h2_data = H2SensorData(
+            pressure_mpa=request.pressure_mpa,
+            temperature_celsius=request.temperature_celsius,
+            hydrogen_concentration_ppm=request.hydrogen_concentration_ppm,
+            vibration_hz=request.vibration_hz,
+            pipe_age_years=request.pipe_age_years,
+            material=request.material,
+            flow_rate_kg_h=request.flow_rate_kg_h,
+            corrosion_rate_mm_year=request.corrosion_rate_mm_year,
+            soil_moisture_percent=request.soil_moisture_percent,
+            operating_hours=request.operating_hours,
         )
 
-        usvisa_df = usvisa_data.get_usvisa_input_data_frame()
+        h2_df = h2_data.get_h2_input_data_frame()
 
         # Make prediction
-        model_predictor = USvisaClassifier()
-        prediction_value = model_predictor.predict(dataframe=usvisa_df)[0]
+        model_predictor = H2PipelineLeakDetector()
+        prediction_value = model_predictor.predict(dataframe=h2_df)[0]
 
         # Convert to readable format
-        prediction_result = "Visa-approved" if prediction_value == 1 else "Visa Not-Approved"
+        leak_detected = prediction_value == 1
+        leak_severity = "critical_leak" if leak_detected else "no_leak"
         
         duration = time.time() - start_time
         
         # Record metrics
-        MetricsCollector.record_prediction(prediction_result, duration)
+        MetricsCollector.record_prediction(leak_severity, duration)
         
         # Log prediction
         log_prediction(
             input_data=request.dict(),
-            prediction=prediction_result,
+            prediction=leak_severity,
             confidence=None,
             request_id=request_id,
         )
 
-        return USVisaPredictionResponse(
-            prediction=prediction_result,
+        return H2SensorDataResponse(
+            leak_detected=leak_detected,
+            leak_severity=leak_severity,
             confidence=None,
-            status="success",
+            risk_score=None,
+            recommended_action="Monitor pipeline" if leak_detected else "Continue normal operations",
         )
 
     except ValueError as e:
@@ -238,9 +242,9 @@ async def predict_api(request: USVisaPredictionRequest):
             detail=str(e),
         )
     except Exception as e:
-        error_msg = f"Prediction failed: {str(e)}"
+        error_msg = f"Leak detection failed: {str(e)}"
         log_error_event(error_msg)
-        MetricsCollector.record_error("prediction_error")
+        MetricsCollector.record_validation_error()
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=error_msg,
@@ -250,13 +254,13 @@ async def predict_api(request: USVisaPredictionRequest):
 @app.post("/", tags=["web"])
 async def predict_route_client(request: Request):
     """
-    Web form endpoint for visa prediction
+    Web form endpoint for hydrogen pipeline leak detection
     
     Args:
         request: FastAPI Request object with form data
         
     Returns:
-        HTML template response with prediction result
+        HTML template response with leak detection result
     """
     start_time = time.time()
     
@@ -264,46 +268,47 @@ async def predict_route_client(request: Request):
         form = await request.form()
         
         # Extract form data
-        usvisa_data = USvisaData(
-            continent=form.get("continent"),
-            education_of_employee=form.get("education_of_employee"),
-            has_job_experience=form.get("has_job_experience") == "on",
-            requires_job_training=form.get("requires_job_training") == "on",
-            no_of_employees=int(form.get("no_of_employees")),
-            company_age=int(form.get("company_age")),
-            region_of_employment=form.get("region_of_employment"),
-            prevailing_wage=float(form.get("prevailing_wage")),
-            unit_of_wage=form.get("unit_of_wage"),
-            full_time_position=form.get("full_time_position") == "on",
+        h2_data = H2SensorData(
+            pressure_mpa=float(form.get("pressure_mpa")),
+            temperature_celsius=float(form.get("temperature_celsius")),
+            hydrogen_concentration_ppm=float(form.get("hydrogen_concentration_ppm")),
+            vibration_hz=float(form.get("vibration_hz")),
+            pipe_age_years=int(form.get("pipe_age_years")),
+            material=form.get("material"),
+            flow_rate_kg_h=float(form.get("flow_rate_kg_h")),
+            corrosion_rate_mm_year=float(form.get("corrosion_rate_mm_year")),
+            soil_moisture_percent=float(form.get("soil_moisture_percent")),
+            operating_hours=int(form.get("operating_hours")),
         )
 
-        usvisa_df = usvisa_data.get_usvisa_input_data_frame()
+        h2_df = h2_data.get_h2_input_data_frame()
 
-        model_predictor = USvisaClassifier()
-        prediction_value = model_predictor.predict(dataframe=usvisa_df)[0]
+        model_predictor = H2PipelineLeakDetector()
+        prediction_value = model_predictor.predict(dataframe=h2_df)[0]
 
-        status_result = "Visa-approved" if prediction_value == 1 else "Visa Not-Approved"
+        leak_detected = prediction_value == 1
+        leak_status = "LEAK DETECTED" if leak_detected else "NO LEAK"
         
         duration = time.time() - start_time
-        MetricsCollector.record_prediction(status_result, duration)
+        MetricsCollector.record_prediction(leak_status, duration)
         
         log_prediction(
-            input_data=usvisa_data.get_usvisa_data_as_dict(),
-            prediction=status_result,
+            input_data=h2_data.get_h2_data_as_dict(),
+            prediction=leak_status,
         )
 
         return templates.TemplateResponse(
-            "usvisa.html",
-            {"request": request, "context": status_result},
+            "h2_pipeline.html",
+            {"request": request, "context": leak_status},
         )
 
     except Exception as e:
-        error_msg = f"Web prediction failed: {str(e)}"
+        error_msg = f"Web leak detection failed: {str(e)}"
         log_error_event(error_msg)
-        MetricsCollector.record_error("web_prediction_error")
+        MetricsCollector.record_validation_error()
         
         return templates.TemplateResponse(
-            "usvisa.html",
+            "h2_pipeline.html",
             {
                 "request": request,
                 "context": f"Error: {str(e)}",
@@ -322,6 +327,7 @@ async def api_status():
     """
     return {
         "status": "running",
+        "service": "Hydrogen Pipeline Leak Detection",
         "environment": settings.ENVIRONMENT,
         "version": settings.API_VERSION,
         "debug": settings.DEBUG,
@@ -331,6 +337,6 @@ async def api_status():
 
 if __name__ == "__main__":
     logger.info(
-        f"Starting application on {settings.APP_HOST}:{settings.APP_PORT}"
+        f"Starting Hydrogen Pipeline Leak Detection application on {settings.APP_HOST}:{settings.APP_PORT}"
     )
     app_run(app, host=settings.APP_HOST, port=settings.APP_PORT, reload=settings.DEBUG)

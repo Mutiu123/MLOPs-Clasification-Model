@@ -164,3 +164,9 @@ ignore_mat.dm
 
 artifact/* 
 
+# Sensor data
+Sensor\ data/
+Sensor\ data/**
+*.csv
+!README.md
+
